@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thrillophilia Sales Operations & Travel Expert Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#FF5A00',
+                            orangeLight: '#FFF7ED',
+                            orangeDark: '#C2410C',
+                            slate: '#1E293B',
+                            slateDark: '#0F172A',
+                            softBg: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .tab-active { background-color: #FF5A00; color: #ffffff; }
+        .tab-inactive { color: #64748b; }
+        .tab-inactive:hover { background-color: #f1f5f9; color: #0f172a; }
+    </style>
+</head>
+<body class="bg-brand-softBg text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40">
+        <div class="px-4 lg:px-6 py-3 flex items-center justify-between gap-4">
+            <!-- Brand Logo & Portal Name -->
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuToggle" class="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-lg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="bg-brand-orange text-white p-2 rounded-xl font-black text-xl tracking-tighter shadow-md">
+                        TH
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-bold text-base md:text-lg tracking-tight leading-none text-white">THRILLOPHILIA</h1>
+                            <span class="bg-brand-orange/20 text-brand-orange border border-brand-orange/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Expert Portal</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium mt-0.5">Sales Operations & Destination Knowledge Base</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Search Bar -->
+            <div class="flex-1 max-w-xl relative hidden md:block">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="globalSearch" placeholder="Search SOPs, driver rules, visa, cadence, houseboats..." class="w-full bg-slate-800 text-slate-100 text-sm pl-10 pr-10 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all placeholder-slate-400">
+                    <button id="clearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Actions Header -->
+            <div class="flex items-center gap-3">
+                <button onclick="openAuditModal()" class="flex items-center gap-1.5 text-xs font-semibold bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 px-3 py-1.5 rounded-lg transition-all">
+                    <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">STOP & VERIFY Audit</span>
+                </button>
+                <button onclick="resetAllChecklists()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-all" title="Reset Saved Checklists">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="px-4 pb-3 md:hidden">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="mobileSearch" placeholder="Search SOPs, visa, driver rules..." class="w-full bg-slate-800 text-slate-100 text-xs pl-10 pr-4 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-brand-orange">
+            </div>
+        </div>
+    </header>
+
+    <!-- App Body Container -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <aside id="sidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between hidden lg:flex transition-all z-30">
+            <div class="p-4 space-y-1">
+                <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Navigation Modules</p>
+                <button onclick="switchTab('sales-ops')" id="nav-sales-ops" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all text-left tab-active">
+                    <i data-lucide="phone-call" class="w-4 h-4 flex-shrink-0"></i>
+                    <span>Sales Operations & Cadence</span>
+                </button>
+                <button onclick="switchTab('qb-sop')" id="nav-qb-sop" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all text-left tab-inactive">
+                    <i data-lucide="file-check" class="w-4 h-4 flex-shrink-0"></i>
+                    <span>Quotation Builder (QB) SOP</span>
+                </button>
+                <button onclick="switchTab('kerala-portal')" id="nav-kerala-portal" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all text-left tab-inactive">
+                    <i data-lucide="palmtree" class="w-4 h-4 flex-shrink-0"></i>
+                    <span>Kerala Expert Portal</span>
+                </button>
+                <button onclick="switchTab('vietnam-portal')" id="nav-vietnam-portal" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all text-left tab-inactive">
+                    <i data-lucide="compass" class="w-4 h-4 flex-shrink-0"></i>
+                    <span>Vietnam Expert Portal</span>
+                </button>
+                <button onclick="switchTab('self-assessment')" id="nav-self-assessment" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all text-left tab-inactive">
+                    <i data-lucide="award" class="w-4 h-4 flex-shrink-0"></i>
+                    <span>Assessment & Checklists</span>
+                </button>
+            </div>
+
+            <!-- Quick Links / Help -->
+            <div class="p-4 border-t border-slate-800 space-y-3">
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 text-xs">
+                    <div class="flex items-center gap-2 text-brand-orange font-semibold mb-1">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i>
+                        <span>System Escalation?</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed">System calls not triggering or leads missing? Notify Team Lead immediately.</p>
+                </div>
+                <div class="text-[11px] text-slate-500 text-center font-medium">
+                    Thrillophilia Operations v3.2
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8 space-y-6">
+
+            <!-- Search Results Display Box (Hidden by default) -->
+            <div id="searchResultsBox" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="search" class="w-5 h-5 text-brand-orange"></i>
+                        <span>Search Results for "<span id="searchKeyword" class="text-brand-orange"></span>"</span>
+                    </h3>
+                    <button onclick="closeSearchResults()" class="text-slate-400 hover:text-slate-600 text-xs font-semibold">Close Results</button>
+                </div>
+                <div id="searchResultsContainer" class="space-y-3 text-sm"></div>
+            </div>
+
+            <!-- ================= MODULE 1: SALES OPERATIONS & CADENCE SOP ================= -->
+            <section id="mod-sales-ops" class="space-y-6">
+                <!-- Top Header Banner -->
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-sm border border-slate-800 relative overflow-hidden">
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="bg-brand-orange text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Standard Operating Procedure</span>
+                            <span class="text-slate-400 text-xs">• Version 2026.1</span>
+                        </div>
+                        <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Sales Operations & Lead Cadence SOP</h2>
+                        <p class="text-slate-300 text-xs lg:text-sm max-w-2xl">First Response TAT, New Lead Cadence Matrix, Priority Rules, Daily Talk Time, and CRM Compliance Standards for Thrillophilia Sales Partners.</p>
+                    </div>
+                </div>
+
+                <!-- Quick Metrics Strip -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 lg:gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-brand-orange">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">1st Response TAT</p>
+                        <p class="text-xl font-extrabold text-slate-900 mt-1">≤ 15 Mins</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">After Auto-Assignment</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-brand-orange">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Calling Cadence</p>
+                        <p class="text-xl font-extrabold text-slate-900 mt-1">3x / Day</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">4 Days (12 Attempts Total)</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Daily Talk Time</p>
+                        <p class="text-xl font-extrabold text-emerald-600 mt-1">1.5 Hours</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">39 Hours Monthly Target</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Task Completion</p>
+                        <p class="text-xl font-extrabold text-blue-600 mt-1">≥ 95%</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Daily & Monthly Target</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-purple-500 col-span-2 md:col-span-1">
+                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Quality Score</p>
+                        <p class="text-xl font-extrabold text-purple-600 mt-1">&gt; 85%</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Monthly Minimum Audit</p>
+                    </div>
+                </div>
+
+                <!-- 4-Day Calling Matrix & Priority Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Calling Cadence Matrix Table -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                <i data-lucide="calendar" class="w-5 h-5 text-brand-orange"></i>
+                                <span>New Lead 4-Day Calling Cadence Matrix</span>
+                            </h3>
+                            <span class="text-xs bg-amber-50 text-amber-700 font-semibold px-2.5 py-1 rounded-md border border-amber-200">Max 12 Attempts</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 font-bold uppercase border-b border-slate-200">
+                                        <th class="p-3">Day</th>
+                                        <th class="p-3">Morning Slot</th>
+                                        <th class="p-3">Afternoon Slot</th>
+                                        <th class="p-3">Evening Slot</th>
+                                        <th class="p-3 text-right">Daily Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 font-bold text-slate-900">Day 1</td>
+                                        <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-semibold">Attempt 1</span> (≤15 min)</td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 2</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 3</span></td>
+                                        <td class="p-3 text-right font-bold text-brand-orange">3 Attempts</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 font-bold text-slate-900">Day 2</td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 4</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 5</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 6</span></td>
+                                        <td class="p-3 text-right font-bold text-brand-orange">3 Attempts</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 font-bold text-slate-900">Day 3</td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 7</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 8</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 9</span></td>
+                                        <td class="p-3 text-right font-bold text-brand-orange">3 Attempts</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/50">
+                                        <td class="p-3 font-bold text-slate-900">Day 4</td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 10</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 11</span></td>
+                                        <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded">Attempt 12</span></td>
+                                        <td class="p-3 text-right font-bold text-brand-orange">3 Attempts</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200/60 leading-relaxed">
+                            <strong class="text-slate-800">Mandatory Rule:</strong> Do NOT mark a lead as <em>Lost/Unresponsive</em> prior to completing all 12 attempts across 4 days, subject to process disposition rules.
+                        </p>
+                    </div>
+
+                    <!-- Priority Matrix Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2 border-b pb-3">
+                            <i data-lucide="flame" class="w-5 h-5 text-red-500"></i>
+                            <span>Lead Priority Matrix</span>
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 rounded-xl bg-red-50 border border-red-200">
+                                <div class="flex items-center justify-between font-bold text-red-800 mb-1">
+                                    <span>HOT LEADS</span>
+                                    <span class="bg-red-200 text-red-900 px-2 py-0.5 rounded text-[10px]">Priority 1</span>
+                                </div>
+                                <p class="text-red-700">Follow agreed customer timelines strictly. Focus on rapid objection handling and closing the sale.</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                                <div class="flex items-center justify-between font-bold text-amber-800 mb-1">
+                                    <span>WARM LEADS</span>
+                                    <span class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded text-[10px]">Min 1 Call/Day</span>
+                                </div>
+                                <p class="text-amber-700">Attempt minimum once daily or as committed with the client. Send revised quotations promptly.</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                                <div class="flex items-center justify-between font-bold text-blue-800 mb-1">
+                                    <span>COLD LEADS</span>
+                                    <span class="bg-blue-200 text-blue-900 px-2 py-0.5 rounded text-[10px]">Cadence Follow</span>
+                                </div>
+                                <p class="text-blue-700">Follow defined cadence schedule. Log accurate CRM notes after every attempt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CRM Note Requirements & Benchmarks -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Mandatory Notes Standard -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Mandatory CRM Notes Rule: "No Call Without Notes"</span>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2">
+                                <span class="font-bold text-emerald-800 uppercase tracking-wide block">Responsive Customers</span>
+                                <ul class="space-y-1 text-emerald-900 list-disc list-inside">
+                                    <li>Travel requirements & passenger count</li>
+                                    <li>Discussion summary & customer interest</li>
+                                    <li>Objections raised & handling status</li>
+                                    <li>Quotation / proposal version shared</li>
+                                    <li>Committed follow-up date & exact time</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                                <span class="font-bold text-slate-800 uppercase tracking-wide block">Non-Responsive Customers</span>
+                                <ul class="space-y-1 text-slate-700 list-disc list-inside">
+                                    <li>Attempt number (e.g. Attempt #5)</li>
+                                    <li>Exact Date & Time stamp</li>
+                                    <li>Disposition: Unanswered / Busy / Switched Off</li>
+                                    <li>Planned next call slot & action</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily & Monthly Performance Table -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="target" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Daily & Monthly Performance Standards</span>
+                        </h3>
+                        <div class="overflow-x-auto text-xs">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 font-bold uppercase border-b">
+                                        <th class="p-2.5">Metric</th>
+                                        <th class="p-2.5">Daily Standard</th>
+                                        <th class="p-2.5">Monthly Benchmark</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td class="p-2.5 font-bold">New Lead Allocation</td>
+                                        <td class="p-2.5">5-10 leads / day</td>
+                                        <td class="p-2.5 text-slate-400">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">First Response TAT</td>
+                                        <td class="p-2.5">≤ 15 minutes</td>
+                                        <td class="p-2.5 font-semibold text-emerald-600">100% Compliance</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">Total Talk Time</td>
+                                        <td class="p-2.5">1.5 Hours / day</td>
+                                        <td class="p-2.5 font-semibold text-emerald-600">39 Hours / month</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">Task & Follow-up Completion</td>
+                                        <td class="p-2.5 font-semibold text-blue-600">≥ 95%</td>
+                                        <td class="p-2.5 font-semibold text-blue-600">≥ 95%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">Quality Audit Score</td>
+                                        <td class="p-2.5 text-slate-400">N/A</td>
+                                        <td class="p-2.5 font-semibold text-purple-600">&gt; 85% Average</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive End-of-Shift Checklist -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                <i data-lucide="check-square" class="w-5 h-5 text-emerald-600"></i>
+                                <span>Daily End-of-Shift Checklist</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Check off completed items before logging off for the day. (State is saved automatically)</p>
+                        </div>
+                        <span id="shiftProgress" class="text-xs font-bold text-brand-orange bg-brand-orangeLight px-3 py-1 rounded-full border border-brand-orange/20">0/8 Completed</span>
+                    </div>
+                    <div id="endOfShiftChecklist" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <!-- Checklist items rendered dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= MODULE 2: QUOTATION BUILDER (QB) SOP ================= -->
+            <section id="mod-qb-sop" class="hidden space-y-6">
+                <!-- Top Header Banner -->
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-sm border border-slate-800 space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-emerald-500 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Operational Checklist</span>
+                        <span class="text-slate-400 text-xs">• Quotation Builder Guide</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Quotation Builder (QB) SOP & Quality Verification</h2>
+                    <p class="text-slate-300 text-xs lg:text-sm max-w-2xl">Follow the 6-step builder sequence to build accurate itineraries, select approved hotels, verify taxes, and conduct final pre-share audits.</p>
+                </div>
+
+                <!-- 6-Step Visual Interactive Stepper -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i data-lucide="layers" class="w-5 h-5 text-brand-orange"></i>
+                        <span>6-Step Quotation Builder Execution Sequence</span>
+                    </h3>
+
+                    <!-- Stepper Buttons Bar -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                        <button onclick="setQbStep(1)" id="qb-step-btn-1" class="p-3 rounded-xl border text-left transition-all bg-brand-orange text-white border-brand-orange font-semibold text-xs shadow-sm">
+                            <span class="text-[10px] block text-white/80 uppercase">Step 1</span>
+                            Requirement Check
+                        </button>
+                        <button onclick="setQbStep(2)" id="qb-step-btn-2" class="p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs">
+                            <span class="text-[10px] block text-slate-400 uppercase">Step 2</span>
+                            Itinerary Setup
+                        </button>
+                        <button onclick="setQbStep(3)" id="qb-step-btn-3" class="p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs">
+                            <span class="text-[10px] block text-slate-400 uppercase">Step 3</span>
+                            Hotel Selection
+                        </button>
+                        <button onclick="setQbStep(4)" id="qb-step-btn-4" class="p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs">
+                            <span class="text-[10px] block text-slate-400 uppercase">Step 4</span>
+                            Transfers & Tours
+                        </button>
+                        <button onclick="setQbStep(5)" id="qb-step-btn-5" class="p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs">
+                            <span class="text-[10px] block text-slate-400 uppercase">Step 5</span>
+                            Visa/Insurance/eSIM
+                        </button>
+                        <button onclick="setQbStep(6)" id="qb-step-btn-6" class="p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs">
+                            <span class="text-[10px] block text-slate-400 uppercase">Step 6</span>
+                            Pricing & Margin
+                        </button>
+                    </div>
+
+                    <!-- Step Content Container -->
+                    <div id="qb-step-content" class="bg-slate-50 p-5 rounded-xl border border-slate-200 text-xs space-y-3">
+                        <!-- Dynamic step content rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Tax & Financial Breakdown + STOP Banner -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Tax & Commercial Matrix -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="calculator" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Pricing & Tax Standards</span>
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border">
+                                <div>
+                                    <span class="font-bold text-slate-900 block">5% GST</span>
+                                    <span class="text-slate-500">Statutory Goods & Services Tax</span>
+                                </div>
+                                <span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded">Mandatory</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border">
+                                <div>
+                                    <span class="font-bold text-slate-900 block">2% TCS</span>
+                                    <span class="text-slate-500">Tax Collected at Source (Outbound)</span>
+                                </div>
+                                <span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded">Mandatory</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border">
+                                <div>
+                                    <span class="font-bold text-slate-900 block">Profit Margin Range</span>
+                                    <span class="text-slate-500">Must be within approved yield limit</span>
+                                </div>
+                                <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">Audit Check</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STOP & VERIFY Audit Banner -->
+                    <div class="lg:col-span-2 bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-sm flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+                                <span class="font-extrabold uppercase tracking-wider text-xs bg-black/20 px-3 py-1 rounded-full">Pre-Share Audit Mandate</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold">STOP & VERIFY BEFORE SHARING QUOTES</h3>
+                            <p class="text-xs text-red-100 leading-relaxed">Do not share any quotation link with customers until travel dates, pax count, package components, pricing, margins, GST, TCS, and cancellation policies have been audited 100%.</p>
+                        </div>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="openAuditModal()" class="bg-white text-red-600 hover:bg-red-50 font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                Open Launch Checklist Audit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= MODULE 3: KERALA EXPERT PORTAL ================= -->
+            <section id="mod-kerala-portal" class="hidden space-y-6">
+                <!-- Top Header Banner -->
+                <div class="bg-gradient-to-r from-emerald-900 via-slate-900 to-emerald-900 text-white p-6 rounded-2xl shadow-sm border border-emerald-800/50 space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-emerald-500 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Destination SOP</span>
+                        <span class="text-emerald-300 text-xs">• Domestic Hub</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Kerala Travel Expert Knowledge Portal</h2>
+                    <p class="text-emerald-100 text-xs lg:text-sm max-w-2xl">Complete product mapping, regional highlights, vehicle operational rules, customer positioning, and inclusion guidelines for Kerala sales.</p>
+                </div>
+
+                <!-- Product Memory Hook Banner -->
+                <div class="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-xl flex items-center gap-3">
+                    <div class="bg-emerald-600 text-white p-2 rounded-lg flex-shrink-0">
+                        <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">Product Memory Hook</span>
+                        <p class="text-xs lg:text-sm font-extrabold text-emerald-950">
+                            Kochi = Gateway &nbsp;|&nbsp; Munnar = Hills &nbsp;|&nbsp; Thekkady = Wildlife &nbsp;|&nbsp; Alleppey = Backwaters &nbsp;|&nbsp; Varkala/Kovalam = Beaches
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Destination Matrix Cards -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-brand-orange"></i>
+                        <span>Kerala Regional Product Matrix</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Kochi -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">KOCHI (Cochin)</h4>
+                                    <span class="text-[11px] text-slate-500">Commercial Hub</span>
+                                </div>
+                                <span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-1 rounded">1 Day / Transit</span>
+                            </div>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p><strong class="text-slate-800">Hub Role:</strong> Arrival Gateway & City Experience</p>
+                                <p><strong class="text-slate-800">Key Highlights:</strong> Fort Kochi heritage, Chinese Fishing Nets, St. Francis Church, LuLu Mall, Kathakali & Kalaripayattu shows.</p>
+                            </div>
+                        </div>
+
+                        <!-- Munnar -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">MUNNAR</h4>
+                                    <span class="text-[11px] text-emerald-600 font-semibold">Idukki Hill Station</span>
+                                </div>
+                                <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded border border-emerald-200">2-3 Days Stay</span>
+                            </div>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p><strong class="text-slate-800">Hub Role:</strong> Scenic Tea Gardens & Nature</p>
+                                <p><strong class="text-slate-800">Key Highlights:</strong> Tata Tea Museum, Mattupetty Dam, Echo Point, Gap Road scenic viewpoint drive, waterfalls.</p>
+                            </div>
+                        </div>
+
+                        <!-- Thekkady -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">THEKKADY</h4>
+                                    <span class="text-[11px] text-amber-600 font-semibold">Periyar Wildlife</span>
+                                </div>
+                                <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-1 rounded border border-amber-200">1-2 Days Stay</span>
+                            </div>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p><strong class="text-slate-800">Hub Role:</strong> Wildlife & Jungle Adventure</p>
+                                <p><strong class="text-slate-800">Key Highlights:</strong> Periyar National Park boat safari, bamboo rafting, spice plantation walks, jeep safari, elephant center.</p>
+                            </div>
+                        </div>
+
+                        <!-- Alleppey -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">ALLEPPEY (Alappuzha)</h4>
+                                    <span class="text-[11px] text-blue-600 font-semibold">Backwater Hub</span>
+                                </div>
+                                <span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded border border-blue-200">1 Night / Day Cruise</span>
+                            </div>
+                            <div class="text-xs space-y-1.5 text-slate-600">
+                                <p><strong class="text-slate-800">Hub Role:</strong> Backwater Cruises & Houseboats</p>
+                                <p><strong class="text-slate-800">Key Highlights:</strong> Overnight private houseboat stay (Deluxe/Premium with meals), day cruises, canal Shikara boat rides.</p>
+                            </div>
+                        </div>
+
+                        <!-- Varkala & Kovalam -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3 md:col-span-2 lg:col-span-2">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">VARKALA & KOVALAM</h4>
+                                    <span class="text-[11px] text-rose-600 font-semibold">Coastal Beaches</span>
+                                </div>
+                                <span class="bg-rose-50 text-rose-700 text-[10px] font-bold px-2 py-1 rounded border border-rose-200">1-2 Days Stay</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-600">
+                                <div class="bg-slate-50 p-3 rounded-lg border">
+                                    <strong class="text-slate-900 block mb-1">Varkala Beach & Cliff</strong>
+                                    <p>Red cliffs, bohemian cliff-side cafés, peaceful beach atmosphere. Ideal for couples, youth, and relaxed leisure.</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border">
+                                    <strong class="text-slate-900 block mb-1">Kovalam Beach</strong>
+                                    <p>Established crescent beach, water sports, vibrant crowd, luxury beach resorts. Ideal for families and classic itineraries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Driver Rules & Inclusions Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Driver & Vehicle Rules Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="car" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Vehicle Operations & Driver Guidelines</span>
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+                                <span class="font-bold text-amber-900 flex items-center gap-1.5">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                    Driver Operating Window: 7:00 AM – 8:00 PM
+                                </span>
+                                <p class="text-amber-800 leading-relaxed">Drivers are available between 7:00 AM and 8:00 PM. Additional usage beyond 8:00 PM incurs direct customer-paid driver allowance surcharges.</p>
+                            </div>
+                            <ul class="space-y-2 text-slate-700 list-disc list-inside bg-slate-50 p-4 rounded-xl border">
+                                <li><strong>Airport Alignment Check:</strong> Verify whether pickup/drop is at Kochi (COK) or Trivandrum (TRV) airport.</li>
+                                <li><strong>Sequential Driving Flow:</strong> Ensure circuit flows logically (e.g. COK ➔ Munnar ➔ Thekkady ➔ Alleppey ➔ TRV/COK).</li>
+                                <li><strong>Pre-Trip Briefing:</strong> Always communicate vehicle timing expectations to customers before closing.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Inclusions vs Exclusions -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Inclusions vs Exclusions Rules</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2">
+                                <span class="font-bold text-emerald-800 uppercase block">Standard Inclusions</span>
+                                <ul class="space-y-1 text-emerald-900 list-disc list-inside">
+                                    <li>Airport pickup & drop transfers</li>
+                                    <li>Breakfast from Day 2 onwards</li>
+                                    <li>Private AC vehicle for itinerary</li>
+                                    <li>All meals on Houseboat stay</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-rose-50 rounded-xl border border-rose-200 space-y-2">
+                                <span class="font-bold text-rose-800 uppercase block">Standard Exclusions</span>
+                                <ul class="space-y-1 text-rose-900 list-disc list-inside">
+                                    <li>Lunch and Dinner at hotels</li>
+                                    <li>Entry tickets (unless specified)</li>
+                                    <li>Driver late-night allowance</li>
+                                    <li>Personal expenses & tips</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Persona Pitching Rules -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-brand-orange"></i>
+                        <span>Customer Persona Pitching Strategy</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="p-4 bg-slate-50 rounded-xl border space-y-1.5">
+                            <div class="flex justify-between items-center font-bold text-slate-900">
+                                <span>Couples / Honeymooners</span>
+                                <span class="bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded">Romantic</span>
+                            </div>
+                            <p class="text-slate-600"><strong class="text-slate-800">Route:</strong> Munnar (2N) + Alleppey Private Houseboat (1N) + Varkala/Kovalam Beach (1-2N).</p>
+                            <p class="text-slate-500">Highlight Gap Road drives, candlelight dinners on houseboats, cliff sunset cafés in Varkala, and peaceful beach luxury.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border space-y-1.5">
+                            <div class="flex justify-between items-center font-bold text-slate-900">
+                                <span>Family Vacations</span>
+                                <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded">Sightseeing</span>
+                            </div>
+                            <p class="text-slate-600"><strong class="text-slate-800">Route:</strong> Kochi + Munnar (2N) + Thekkady (1N) + Alleppey (1N).</p>
+                            <p class="text-slate-500">Focus on tea estates, Periyar wildlife boat safaris, comfortable private vehicle pace, and child-friendly spots.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border space-y-1.5">
+                            <div class="flex justify-between items-center font-bold text-slate-900">
+                                <span>Monsoon Travellers (June-July)</span>
+                                <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded">Greenery</span>
+                            </div>
+                            <p class="text-slate-600"><strong class="text-slate-800">Route:</strong> Munnar + Thekkady + Resort-focused stay.</p>
+                            <p class="text-slate-500">Position lush green landscapes, roaring waterfalls, Ayurveda treatments, and premium resort upgrades at off-season rates.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border space-y-1.5">
+                            <div class="flex justify-between items-center font-bold text-slate-900">
+                                <span>Price-Sensitive Clients</span>
+                                <span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded">Value Focus</span>
+                            </div>
+                            <p class="text-slate-600"><strong class="text-slate-800">Route:</strong> Munnar + Shikara Boat Ride in Alleppey instead of Houseboat.</p>
+                            <p class="text-slate-500">Reframe around value: private vehicle convenience, 100% verified hotels, on-ground language support, and guaranteed service quality.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= MODULE 4: VIETNAM EXPERT PORTAL ================= -->
+            <section id="mod-vietnam-portal" class="hidden space-y-6">
+                <!-- Top Header Banner -->
+                <div class="bg-gradient-to-r from-red-950 via-slate-900 to-red-950 text-white p-6 rounded-2xl shadow-sm border border-red-900/50 space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-red-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Destination SOP</span>
+                        <span class="text-red-300 text-xs">• International Hub</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Vietnam Travel Expert Knowledge Portal</h2>
+                    <p class="text-red-100 text-xs lg:text-sm max-w-2xl">Regional breakdowns, flight connectivity, visa policies, transfer modes, and ticket inclusion golden rules for selling Vietnam.</p>
+                </div>
+
+                <!-- Travel Expert Mantra Banner -->
+                <div class="bg-red-50 border-2 border-red-200 p-4 rounded-xl flex items-center gap-3">
+                    <div class="bg-red-600 text-white p-2 rounded-lg flex-shrink-0">
+                        <i data-lucide="compass" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="text-[11px] font-bold text-red-800 uppercase tracking-wider block">Travel Expert Mantra</span>
+                        <p class="text-xs lg:text-sm font-extrabold text-red-950">
+                            "Sell the right experience — not the longest list of attractions!"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Regional Breakdown Cards -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i data-lucide="map" class="w-5 h-5 text-brand-orange"></i>
+                        <span>Three Primary Regions Breakdown</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <!-- North -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">NORTH VIETNAM</h4>
+                                    <span class="text-[11px] text-blue-600 font-semibold">Hanoi Hub</span>
+                                </div>
+                                <span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-1 rounded">3-5 Days Stay</span>
+                            </div>
+                            <div class="space-y-2 text-slate-600">
+                                <p><strong class="text-slate-800">Primary Hubs:</strong> Hanoi, Ha Long Bay, Ninh Binh, Sapa.</p>
+                                <p><strong class="text-slate-800">Top Attractions:</strong> Old Quarter, Train Street, Ha Long UNESCO Cruise, Trang An boat tour, Cat Cat Trek (~50m) & Mt. Fansipan.</p>
+                                <p><strong class="text-slate-800">Best For:</strong> Culture lovers, heritage seekers, couples & nature trekkers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Central -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">CENTRAL VIETNAM</h4>
+                                    <span class="text-[11px] text-amber-600 font-semibold">Da Nang Hub</span>
+                                </div>
+                                <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-1 rounded">3-4 Days Stay</span>
+                            </div>
+                            <div class="space-y-2 text-slate-600">
+                                <p><strong class="text-slate-800">Primary Hubs:</strong> Da Nang, Hoi An, Ba Na Hills.</p>
+                                <p><strong class="text-slate-800">Top Attractions:</strong> Ba Na Hills (Golden Bridge, Cable Car & Fantasy Park), Hoi An Ancient Town lantern evening, My Khe Beach.</p>
+                                <p><strong class="text-slate-800">Best For:</strong> Families with kids, honeymooners & leisure travellers.</p>
+                            </div>
+                        </div>
+
+                        <!-- South -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between border-b pb-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">SOUTH & ISLANDS</h4>
+                                    <span class="text-[11px] text-emerald-600 font-semibold">Ho Chi Minh Hub</span>
+                                </div>
+                                <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded">3-4 Days Stay</span>
+                            </div>
+                            <div class="space-y-2 text-slate-600">
+                                <p><strong class="text-slate-800">Primary Hubs:</strong> Ho Chi Minh City, Mekong Delta, Phu Quoc.</p>
+                                <p><strong class="text-slate-800">Top Attractions:</strong> War Museum, Cu Chi Tunnels, Mekong river boat tours, Phu Quoc beach resorts & cable car.</p>
+                                <p><strong class="text-slate-800">Best For:</strong> History enthusiasts, nightlife seekers & beach lovers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistics, Flight & Visa Rules -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Flights & Logistics -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="plane" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Air Routes & Flight Alignment Rules</span>
+                        </h3>
+                        <div class="space-y-3 text-xs text-slate-700">
+                            <div class="p-3 bg-slate-50 rounded-xl border">
+                                <strong class="text-slate-900 block mb-1">Direct Flight Connectivity</strong>
+                                <p class="text-slate-600">Direct flights available from DEL, BOM, AMD, CCU, BLR, and HYD to Hanoi (HAN), Da Nang (DAD), and Ho Chi Minh City (SGN).</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-xl border">
+                                <strong class="text-slate-900 block mb-1">Arrival Flight Alignment Rule</strong>
+                                <p class="text-slate-600">Always check arrival flight times before fixing first-day tours to avoid customer exhaustion or missed transfers.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-xl border">
+                                <strong class="text-slate-900 block mb-1">Open-Jaw Routing Recommendation</strong>
+                                <p class="text-slate-600">Build open-jaw itineraries (e.g., Fly in HAN ➔ Fly out SGN) to avoid unnecessary internal travel backtracking.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visa Rules & Transfer Mode -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i data-lucide="passport" class="w-5 h-5 text-brand-orange"></i>
+                            <span>Visa Policy & Transfer Mode Rules</span>
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <!-- Visa Box -->
+                            <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1">
+                                <div class="flex justify-between items-center font-bold text-emerald-900">
+                                    <span>Mainland E-Visa vs Phu Quoc Exemption</span>
+                                </div>
+                                <p class="text-emerald-800"><strong>Mainland E-Visa:</strong> Mandatory for mainland entry. Online application takes 3–5 working days.</p>
+                                <p class="text-emerald-800"><strong>Phu Quoc 30-Day Exemption:</strong> Indian passport holders receive 30 days Visa-Free entry when flying directly into Phu Quoc Island.</p>
+                            </div>
+
+                            <!-- Transfer Mode Box -->
+                            <div class="p-4 bg-slate-50 rounded-xl border space-y-1">
+                                <strong class="text-slate-900 block">Transfer Mode Distinction</strong>
+                                <p class="text-slate-600"><strong>Private Transfers:</strong> Recommended for families & luxury clients for maximum comfort.</p>
+                                <p class="text-slate-600"><strong>Seat-In-Coach (SIC):</strong> Budget-friendly; requires strict adherence to pick-up schedules.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Golden Ticket Inclusion Rule -->
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-6 rounded-2xl shadow-sm space-y-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="ticket" class="w-6 h-6 text-white"></i>
+                        <span class="font-extrabold uppercase tracking-wider text-xs bg-black/20 px-3 py-1 rounded-full">Golden Rule for Tickets</span>
+                    </div>
+                    <h3 class="text-lg font-extrabold">Theme Park & Cable Car Ticket Inclusions</h3>
+                    <p class="text-xs text-amber-50 leading-relaxed">Major attraction tickets (Ba Na Hills Golden Bridge Cable Car, Fansipan Cable Car, VinWonders, VinSafari) are included <strong>ONLY</strong> when explicitly listed in the Quotation Builder. Never promise optional theme park tickets in base quotes without verification!</p>
+                </div>
+            </section>
+
+
+            <!-- ================= MODULE 5: SELF-ASSESSMENT & CHECKLISTS ================= -->
+            <section id="mod-self-assessment" class="hidden space-y-6">
+                <!-- Top Header Banner -->
+                <div class="bg-gradient-to-r from-purple-900 via-slate-900 to-purple-900 text-white p-6 rounded-2xl shadow-sm border border-purple-800/50 space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-purple-500 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Trainee Evaluation</span>
+                        <span class="text-purple-300 text-xs">• Self-Assessment Module</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Interactive Knowledge Quiz & Pre-Quotation Checklist</h2>
+                    <p class="text-purple-100 text-xs lg:text-sm max-w-2xl">Test your understanding of sales cadences, quotation rules, driver limits, and destination SOPs. Complete the master pre-share audit checklist.</p>
+                </div>
+
+                <!-- Interactive Knowledge Quiz -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                <i data-lucide="help-circle" class="w-5 h-5 text-purple-600"></i>
+                                <span>10-Question Knowledge Check</span>
+                            </h3>
+                            <p class="text-xs text-slate-500">Select the correct answer for each question. Instant feedback is provided.</p>
+                        </div>
+                        <span id="quizScoreBadge" class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">Score: 0 / 10</span>
+                    </div>
+
+                    <div id="quizContainer" class="space-y-6">
+                        <!-- Questions dynamically rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Master Pre-Quotation Checklist -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                <i data-lucide="clipboard-check" class="w-5 h-5 text-emerald-600"></i>
+                                <span>Master Pre-Quotation Verification Checklist</span>
+                            </h3>
+                            <p class="text-xs text-slate-500">Run through all checks before sharing any quote link with a customer. State is automatically saved.</p>
+                        </div>
+                        <span id="masterChecklistProgress" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">0 / 8 Verified</span>
+                    </div>
+
+                    <div id="masterChecklistContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <!-- Master checklist rendered dynamically via JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="auditModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between border-b pb-3">
+                <div class="flex items-center gap-2 text-red-600">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                    <h3 class="font-bold text-base text-slate-900">STOP & VERIFY Pre-Share Audit</h3>
+                </div>
+                <button onclick="closeAuditModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">Perform a mandatory 6-point audit before sending any quote web link to a customer to prevent pricing or itinerary errors.</p>
+
+            <div class="space-y-2.5 text-xs text-slate-700">
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>1. Travel dates & total passenger count (Adults/Kids) are exact.</span>
+                </label>
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>2. Hotel category, room type & meal plan (B&B) verified.</span>
+                </label>
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>3. Transfer mode (Private vs SIC) and driver hours (7 AM - 8 PM) communicated.</span>
+                </label>
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>4. Theme park / activity entry tickets explicitly checked in QB.</span>
+                </label>
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>5. Selling price, profit margin, 5% GST & 2% TCS accurately calculated.</span>
+                </label>
+                <label class="flex items-start gap-2.5 p-2.5 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100">
+                    <input type="checkbox" class="audit-modal-chk mt-0.5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange">
+                    <span>6. Generated quotation web link verified and working cleanly.</span>
+                </label>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-3 border-t">
+                <button onclick="closeAuditModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800">Close</button>
+                <button id="approveQuoteBtn" onclick="approveAudit()" disabled class="px-4 py-2 text-xs font-bold text-white bg-slate-300 rounded-xl cursor-not-allowed transition-all">
+                    Pass Audit & Share Quote
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Data Structures
+        const endOfShiftItems = [
+            "Actioned all newly assigned leads within 15 mins TAT",
+            "Completed required 3x daily calling attempts for new leads",
+            "Attempted active follow-up leads as required",
+            "Updated CRM notes for 100% of calls made",
+            "Completed assigned follow-up tasks (≥95% benchmark)",
+            "Prioritized Hot & Warm leads for closure",
+            "Updated next follow-up dates and exact commitment times",
+            "Recorded daily sales/closure updates in CRM"
+        ];
+
+        const masterChecklistItems = [
+            "Customer travel duration, budget & persona verified",
+            "Cities arranged in logical sequence without travel backtracking",
+            "Flight arrival/departure times aligned with tour itinerary",
+            "Transfer type (Private vs SIC) explicitly confirmed",
+            "Driver operational hours (7 AM - 8 PM) communicated for domestic quotes",
+            "Theme park entry tickets cross-checked in Quotation Builder",
+            "Visa rules (Mainland E-visa vs Phu Quoc exemption) briefed",
+            "Selling price, margins, 5% GST & 2% TCS fully audited"
+        ];
+
+        const qbStepData = {
+            1: {
+                title: "Step 1: Customer Requirement Verification",
+                details: "Check customer travel dates, exact passenger count (Adults, Kids, Infants), destination cities, hotel categories, visa eligibility, medical insurance needs, and eSIM requirements."
+            },
+            2: {
+                title: "Step 2: Itinerary Setup & Chronological Building",
+                details: "Select destination cities in QB. Select Package Type (Land Package vs Activity Only). Build chronologically in exact order: 1. Add Hotels First -> 2. Add Activities -> 3. Add Transfers. Always click Save/Update after making modifications!"
+            },
+            3: {
+                title: "Step 3: Hotel Selection & Room Policy",
+                details: "Refer strictly to Thrillophilia's approved hotel list. Match requested star ratings. Prefer refundable options. Select B&B (Bed & Breakfast) as standard unless required otherwise."
+            },
+            4: {
+                title: "Step 4: Transfers & Activities Verification",
+                details: "Add airport transfers through API. Check if activities already include transfer before adding vehicle costs. Select 'Based on Availability' for shared/SIC activities; select 'Private' only when requested."
+            },
+            5: {
+                title: "Step 5: Visa, Insurance & eSIM Add-Ons",
+                details: "Select accurate visa categories and check processing timelines. Standard Insurance = Global Care USD 50,000 (upgrade to USD 100,000 if requested). Select country network for eSIM."
+            },
+            6: {
+                title: "Step 6: Pricing, Margins & Statutory Taxes",
+                details: "Enter per person selling price, check vendor cost, verify calculated profit margin is within permitted range. Add mandatory 5% GST and 2% TCS. Apply approved discounts before final preview."
+            }
+        };
+
+        const quizQuestions = [
+            {
+                q: "What is the maximum standard calling cadence TAT for new unresponsive leads?",
+                options: ["3 attempts in 1 day", "6 attempts over 2 days", "12 attempts over 4 days", "15 attempts over 5 days"],
+                ans: 2,
+                explain: "The standard cadence requires 3 attempts per day for 4 days (12 attempts total) before disposition."
+            },
+            {
+                q: "What is the first response TAT for newly assigned leads?",
+                options: ["Within 5 minutes", "Within 15 minutes", "Within 30 minutes", "Within 1 hour"],
+                ans: 1,
+                explain: "First calling attempt must be made within 15 minutes of lead allocation."
+            },
+            {
+                q: "What are the standard operating hours for Kerala package drivers?",
+                options: ["6:00 AM to 6:00 PM", "7:00 AM to 8:00 PM", "8:00 AM to 10:00 PM", "24 Hours Available"],
+                ans: 1,
+                explain: "Drivers operate strictly between 7:00 AM and 8:00 PM. Late usage incurs surcharges."
+            },
+            {
+                q: "What is the minimum daily talk time standard for Sales Partners?",
+                options: ["45 Minutes", "1.0 Hour", "1.5 Hours", "2.5 Hours"],
+                ans: 2,
+                explain: "Daily talk time target is 1.5 hours (39 hours total monthly target)."
+            },
+            {
+                q: "Which step order must be followed when building an itinerary in QB?",
+                options: ["Transfers -> Hotels -> Activities", "Activities -> Transfers -> Hotels", "Hotels First -> Activities -> Transfers", "Hotels -> Transfers -> Activities"],
+                ans: 2,
+                explain: "QB sequence requires adding Hotels first, then Activities, then Transfers."
+            },
+            {
+                q: "What is the Phu Quoc visa exemption policy for Indian passport holders?",
+                options: ["No exemption; E-visa required", "15 Days Visa-Free", "30 Days Visa-Free for direct entry", "60 Days Visa-Free"],
+                ans: 2,
+                explain: "Indian nationals flying directly into Phu Quoc receive 30 days Visa-Free entry."
+            },
+            {
+                q: "When are theme park & cable car entry tickets included in Vietnam quotes?",
+                options: ["Always included in base quotes", "ONLY when explicitly listed in QB package", "Included if client asks verbally", "Free with private transfers"],
+                ans: 1,
+                explain: "Theme park and cable car tickets are included ONLY when explicitly listed in the QB quote."
+            },
+            {
+                q: "What standard meal plan should be selected for hotels unless specified?",
+                options: ["CP / B&B (Bed & Breakfast)", "MAP (Breakfast + Dinner)", "AP (All Meals)", "Room Only"],
+                ans: 0,
+                explain: "B&B (Bed & Breakfast) is the standard default meal plan."
+            },
+            {
+                q: "What statutory taxes must be verified in Quotation Builder?",
+                options: ["18% GST only", "5% GST and 2% TCS", "10% VAT and 5% TCS", "5% GST only"],
+                ans: 1,
+                explain: "Standard outbound quotes require checking 5% GST and 2% TCS."
+            },
+            {
+                q: "What product memory hook describes Kerala hubs?",
+                options: ["Kochi = Beach | Munnar = Hills", "Kochi = Gateway | Munnar = Hills | Thekkady = Wildlife | Alleppey = Backwaters | Varkala = Beaches", "All hubs are beach destinations", "Munnar = Backwaters | Alleppey = Hills"],
+                ans: 1,
+                explain: "Kochi = Gateway | Munnar = Hills | Thekkady = Wildlife | Alleppey = Backwaters | Varkala/Kovalam = Beaches."
+            }
+        ];
+
+        let quizUserAnswers = {};
+
+        // DOM Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderShiftChecklist();
+            renderMasterChecklist();
+            renderQuiz();
+            setQbStep(1);
+            setupSearch();
+            setupAuditModal();
+        });
+
+        // Tab Switching
+        function switchTab(tabId) {
+            const tabs = ['sales-ops', 'qb-sop', 'kerala-portal', 'vietnam-portal', 'self-assessment'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                const mod = document.getElementById(`mod-${t}`);
+                if (t === tabId) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                    mod.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                    mod.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render End of Shift Checklist
+        function renderShiftChecklist() {
+            const container = document.getElementById('endOfShiftChecklist');
+            const savedState = JSON.parse(localStorage.getItem('thrill_shift_chk') || '{}');
+            container.innerHTML = '';
+            let checkedCount = 0;
+
+            endOfShiftItems.forEach((item, idx) => {
+                const isChecked = savedState[idx] || false;
+                if (isChecked) checkedCount++;
+
+                const div = document.createElement('div');
+                div.className = `flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer ${isChecked ? 'bg-emerald-50/60 border-emerald-200 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`;
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const chk = div.querySelector('input');
+                        chk.checked = !chk.checked;
+                        toggleShiftItem(idx, chk.checked);
+                    }
+                };
+
+                div.innerHTML = `
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleShiftItem(${idx}, this.checked)" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                    <span class="leading-tight">${item}</span>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('shiftProgress').innerText = `${checkedCount}/${endOfShiftItems.length} Completed`;
+        }
+
+        function toggleShiftItem(idx, checked) {
+            const savedState = JSON.parse(localStorage.getItem('thrill_shift_chk') || '{}');
+            savedState[idx] = checked;
+            localStorage.setItem('thrill_shift_chk', JSON.stringify(savedState));
+            renderShiftChecklist();
+        }
+
+        // Render Master Checklist
+        function renderMasterChecklist() {
+            const container = document.getElementById('masterChecklistContainer');
+            const savedState = JSON.parse(localStorage.getItem('thrill_master_chk') || '{}');
+            container.innerHTML = '';
+            let checkedCount = 0;
+
+            masterChecklistItems.forEach((item, idx) => {
+                const isChecked = savedState[idx] || false;
+                if (isChecked) checkedCount++;
+
+                const div = document.createElement('div');
+                div.className = `flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer ${isChecked ? 'bg-emerald-50/60 border-emerald-200 text-slate-900' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}`;
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const chk = div.querySelector('input');
+                        chk.checked = !chk.checked;
+                        toggleMasterItem(idx, chk.checked);
+                    }
+                };
+
+                div.innerHTML = `
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleMasterItem(${idx}, this.checked)" class="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                    <span class="leading-tight">${item}</span>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('masterChecklistProgress').innerText = `${checkedCount} / ${masterChecklistItems.length} Verified`;
+        }
+
+        function toggleMasterItem(idx, checked) {
+            const savedState = JSON.parse(localStorage.getItem('thrill_master_chk') || '{}');
+            savedState[idx] = checked;
+            localStorage.setItem('thrill_master_chk', JSON.stringify(savedState));
+            renderMasterChecklist();
+        }
+
+        function resetAllChecklists() {
+            if (confirm("Reset all saved checklist progress?")) {
+                localStorage.removeItem('thrill_shift_chk');
+                localStorage.removeItem('thrill_master_chk');
+                renderShiftChecklist();
+                renderMasterChecklist();
+            }
+        }
+
+        // QB Stepper Logic
+        function setQbStep(step) {
+            for (let i = 1; i <= 6; i++) {
+                const btn = document.getElementById(`qb-step-btn-${i}`);
+                if (i === step) {
+                    btn.className = 'p-3 rounded-xl border text-left transition-all bg-brand-orange text-white border-brand-orange font-semibold text-xs shadow-sm';
+                    btn.querySelector('span').className = 'text-[10px] block text-white/80 uppercase';
+                } else {
+                    btn.className = 'p-3 rounded-xl border text-left transition-all bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold text-xs';
+                    btn.querySelector('span').className = 'text-[10px] block text-slate-400 uppercase';
+                }
+            }
+
+            const data = qbStepData[step];
+            const contentBox = document.getElementById('qb-step-content');
+            contentBox.innerHTML = `
+                <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-brand-orange text-white text-xs flex items-center justify-center">${step}</span>
+                    ${data.title}
+                </h4>
+                <p class="text-slate-700 leading-relaxed">${data.details}</p>
+            `;
+        }
+
+        // Render Knowledge Quiz
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            quizQuestions.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 text-xs';
+
+                let optionsHtml = '';
+                q.options.forEach((opt, oIdx) => {
+                    const isSelected = quizUserAnswers[qIdx] === oIdx;
+                    const isCorrect = q.ans === oIdx;
+                    let optClass = 'bg-white border-slate-200 hover:bg-slate-100 text-slate-800';
+
+                    if (quizUserAnswers[qIdx] !== undefined) {
+                        if (isSelected && isCorrect) optClass = 'bg-emerald-100 border-emerald-300 text-emerald-900 font-bold';
+                        else if (isSelected && !isCorrect) optClass = 'bg-rose-100 border-rose-300 text-rose-900 font-bold';
+                        else if (isCorrect) optClass = 'bg-emerald-50 border-emerald-200 text-emerald-800 font-semibold';
+                    }
+
+                    optionsHtml += `
+                        <button onclick="answerQuiz(${qIdx}, ${oIdx})" class="w-full text-left p-2.5 rounded-lg border transition-all ${optClass}">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                let explanationHtml = '';
+                if (quizUserAnswers[qIdx] !== undefined) {
+                    const isRight = quizUserAnswers[qIdx] === q.ans;
+                    explanationHtml = `
+                        <div class="p-2.5 rounded-lg text-[11px] ${isRight ? 'bg-emerald-100/70 text-emerald-900' : 'bg-rose-100/70 text-rose-900'}">
+                            <strong>${isRight ? 'Correct!' : 'Incorrect.'}</strong> ${q.explain}
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-900 text-sm">
+                        Q${qIdx + 1}: ${q.q}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${optionsHtml}
+                    </div>
+                    ${explanationHtml}
+                `;
+                container.appendChild(card);
+            });
+
+            updateQuizScore();
+        }
+
+        function answerQuiz(qIdx, optionIdx) {
+            quizUserAnswers[qIdx] = optionIdx;
+            renderQuiz();
+        }
+
+        function updateQuizScore() {
+            let score = 0;
+            Object.keys(quizUserAnswers).forEach(qIdx => {
+                if (quizUserAnswers[qIdx] === quizQuestions[qIdx].ans) {
+                    score++;
+                }
+            });
+            document.getElementById('quizScoreBadge').innerText = `Score: ${score} / ${quizQuestions.length}`;
+        }
+
+        // Global Search Setup
+        function setupSearch() {
+            const input = document.getElementById('globalSearch');
+            const mobileInput = document.getElementById('mobileSearch');
+
+            const handleSearch = (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const box = document.getElementById('searchResultsBox');
+                const container = document.getElementById('searchResultsContainer');
+                const kwSpan = document.getElementById('searchKeyword');
+
+                if (query.length < 2) {
+                    box.classList.add('hidden');
+                    return;
+                }
+
+                kwSpan.innerText = query;
+                box.classList.remove('hidden');
+
+                const searchableContent = [
+                    { title: "Driver Operating Window", section: "Kerala Portal", text: "Drivers operate strictly between 7:00 AM and 8:00 PM. Overtime usage incurs surcharges." },
+                    { title: "First Response TAT", section: "Sales Operations", text: "Must attempt first call within 15 minutes of new lead auto-assignment." },
+                    { title: "4-Day Calling Cadence", section: "Sales Operations", text: "3 attempts per day for 4 days (12 attempts total) before disposition." },
+                    { title: "Phu Quoc Visa Exemption", section: "Vietnam Portal", text: "30 Days Visa-Free entry for Indian passport holders flying directly to Phu Quoc." },
+                    { title: "Houseboat Meal Plan", section: "Kerala Portal", text: "All meals (Lunch, Dinner, Breakfast) are included on private houseboat stays." },
+                    { title: "Theme Park Tickets Rule", section: "Vietnam Portal", text: "Ba Na Hills & Fansipan tickets included ONLY when explicitly listed in QB." },
+                    { title: "Chronological QB Builder Sequence", section: "Quotation Builder", text: "Add Hotels First -> Add Activities -> Add Transfers." },
+                    { title: "Statutory Tax Limits", section: "Quotation Builder", text: "Mandatory 5% GST and 2% TCS must be verified." }
+                ];
+
+                const results = searchableContent.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.text.toLowerCase().includes(query) ||
+                    item.section.toLowerCase().includes(query)
+                );
+
+                if (results.length === 0) {
+                    container.innerHTML = `<p class="text-slate-400 italic">No exact SOP matches found for "${query}". Try searching "driver", "visa", "cadence", "houseboat", or "tax".</p>`;
+                } else {
+                    container.innerHTML = results.map(r => `
+                        <div class="p-3 bg-slate-50 rounded-xl border hover:border-brand-orange transition-all">
+                            <div class="flex items-center justify-between font-bold text-slate-900 mb-1">
+                                <span>${r.title}</span>
+                                <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${r.section}</span>
+                            </div>
+                            <p class="text-slate-600 text-xs">${r.text}</p>
+                        </div>
+                    `).join('');
+                }
+            };
+
+            input.addEventListener('input', handleSearch);
+            mobileInput.addEventListener('input', handleSearch);
+        }
+
+        function closeSearchResults() {
+            document.getElementById('searchResultsBox').classList.add('hidden');
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('mobileSearch').value = '';
+        }
+
+        // Audit Modal Setup
+        function setupAuditModal() {
+            const chks = document.querySelectorAll('.audit-modal-chk');
+            const btn = document.getElementById('approveQuoteBtn');
+
+            chks.forEach(chk => {
+                chk.addEventListener('change', () => {
+                    const allChecked = Array.from(chks).every(c => c.checked);
+                    if (allChecked) {
+                        btn.disabled = false;
+                        btn.className = 'px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition-all cursor-pointer';
+                    } else {
+                        btn.disabled = true;
+                        btn.className = 'px-4 py-2 text-xs font-bold text-white bg-slate-300 rounded-xl cursor-not-allowed transition-all';
+                    }
+                });
+            });
+        }
+
+        function openAuditModal() {
+            document.getElementById('auditModal').classList.remove('hidden');
+        }
+
+        function closeAuditModal() {
+            document.getElementById('auditModal').classList.add('hidden');
+        }
+
+        function approveAudit() {
+            alert("✅ Audit Passed! Quotation link has been verified and is ready to share with the customer.");
+            closeAuditModal();
+        }
+
+        // Mobile Sidebar Toggle
+        document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-y-0');
+            sidebar.classList.toggle('left-0');
+        });
+    </script>
+</body>
+</html>
